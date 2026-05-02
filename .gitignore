@@ -1,0 +1,19 @@
+# General
+.venv
+__pycache__/
+*.pyc
+.env
+.DS_Store
+
+# Node
+node_modules/
+dist/
+.eslintcache
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Docker
+.docker
