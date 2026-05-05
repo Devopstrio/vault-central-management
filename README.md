@@ -156,6 +156,15 @@ graph LR
     App -->|5. Connect| DB
 ```
 
+**Dynamic PKI Certificate Flow:**
+```mermaid
+graph TD
+    App[Microservice] -->|Request Cert| Vault[Vault PKI]
+    Vault -->|Generate Key Pair| Cert[X.509 Certificate]
+    Cert -->|Sign with CA| App
+    App -->|mTLS| Backend[Target Service]
+```
+
 ### 3. Distributed Secrets Topology (Namespaces & Replication)
 Strategically orchestrating standardized secret namespaces across global regions and diverse resource architectures, providing a unified institutional view of secrets isolation.
 
@@ -203,8 +212,23 @@ graph LR
     Sentinel -->|Fail| Deny[Log & Deny Access]
 ```
 
+**Lease Management Flow:**
+```mermaid
+graph TD
+    L[Lease Issued] --> T[TTL Timer]
+    T --> Renew{Renewal Request?}
+    Renew -->|Yes| Update[Extend Lease]
+    Renew -->|No| Expire[Revoke Secret]
+```
+
 ### 5. Multi-Cloud Secrets Federation (Performance Replication)
 Automatically managing unified secrets standards across global regions and diverse cloud tenants, ensuring institutional data residency and privacy boundaries by default.
+
+```mermaid
+graph LR
+    VaultAWS[Vault AWS Node] <-->|Performance Sync| VaultAZ[Vault Azure Node]
+    VaultAWS <--> VaultGCP[Vault GCP Node]
+```
 
 ### 6. Encryption & Perimeter Protection Flow (Seal/Unseal)
 Managing the lifecycle of a vault barrier, automatically enforcing institutional KMS auto-unseal and encryption standards as required by security policy, ensuring zero-latency security confidence.
@@ -216,8 +240,21 @@ graph LR
     Vault -->|Master Key| Unsealed[Operational State]
 ```
 
+**Transit Encryption as a Service:**
+```mermaid
+graph LR
+    App[Insecure Data] -->|Ciphertext Request| Vault[Transit Engine]
+    Vault -->|AES-256 GCM| App[Secure Data]
+```
+
 ### 7. Institutional Secrets Maturity Scorecard (Audit Reporting)
 Grading organizational performance based on key indicators: Rotation Success Index, Policy Compliance Index, and Zero-Trust Adoption Scores.
+
+```mermaid
+graph TD
+    Compliance[Compliance Audit] --> Scan[Automated Policy Scan]
+    Scan --> Score[Posture Score]
+```
 
 ### 8. Identity & RBAC for Secrets Governance
 Managing fine-grained access to secrets hubs, provisioning workers, and audit logs between Security Admins and Application Identites.
@@ -231,11 +268,38 @@ graph LR
     Identity -->|Success| Token[Vault Token + Leases]
 ```
 
+**Policy-as-Code Mapping:**
+```mermaid
+graph TD
+    User[Dev Group] --> Policy[HCL Policy: Read Only]
+    Policy --> KV[KV Path: /secret/dev/*]
+```
+
 ### 9. IaC Deployment: Vault-Central-Management-as-Code Framework
 Using modular Terraform pipelines to deploy and manage the versioned distribution of the vault clusters, seal mechanisms, and validation fleets.
 
+```mermaid
+graph TD
+    TF[Terraform] --> Cluster[EKS Cluster]
+    TF --> Vault[Helm Release]
+    TF --> KMS[KMS Key]
+```
+
 ### 10. AIOps Secrets Drift & Risk Validation Flow
 Using advanced analytics to identify sudden surges in access failures, unauthorized policy changes, or unusual delivery pattern changes that could result in institutional risk or audit failure.
+
+```mermaid
+graph TD
+    Fail[Auth Failures Spike] --> AI[Anomaly Engine]
+    AI --> Alert[Security Pager]
+```
+
+**Secret Usage Entropy:**
+```mermaid
+graph LR
+    Log[Audit Log] -->|Analyze| Pattern[Access Pattern]
+    Pattern -->|Anomalous| Revoke[Auto-Revoke Token]
+```
 
 ### 11. Metadata Lake for Forensic Secrets Audit
 Storing long-term records of every secret integration event (metadata), every credential rotation executed, and every audit stream for institutional record-keeping and forensic analysis.
@@ -245,6 +309,13 @@ graph LR
     Vault[Vault Events] -->|JSON Stream| Splunk[Splunk / ELK]
     Vault -->|Metric Stream| Grafana[Grafana Dashboards]
     Splunk -->|Alert| SOC[Security Ops Center]
+```
+
+**Immutable Audit Vaulting:**
+```mermaid
+graph LR
+    Audit[Raw Logs] --> S3[Forensic S3 Bucket]
+    S3 --> Lock[Object Lock - 7 Years]
 ```
 
 ---
