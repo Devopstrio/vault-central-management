@@ -33,50 +33,50 @@ This platform provides the **Secrets Automation Plane**. It implements a complet
 This diagram illustrates the high-level relationship between the Identity & Access layer, the Vault Central Intelligence Plane, and the underlying Enterprise Vault Cluster. It defines the bridge between human/machine identities and the secure secrets substrate.
 
 ```mermaid
-graph LR
+flowchart LR
     %% Subgraph Definitions
     subgraph Identity["Identity & Access (Zero Trust)"]
         direction TB
-        OIDC[OIDC / Okta / Azure AD]
-        K8sAuth[Kubernetes Auth Method]
-        Token[AppRole / Vault Tokens]
+        OIDC["OIDC / Okta / Azure AD"]
+        K8sAuth["Kubernetes Auth Method"]
+        Token["AppRole / Vault Tokens"]
     end
 
     subgraph IntelligencePlane["Vault Central Intelligence Plane"]
         direction TB
-        API[FastAPI Management Gateway]
-        Policy[Policy Engine (Sentinel)]
-        Namespace[Namespace Manager]
-        Audit[Audit & Compliance Hub]
+        API["FastAPI Management Gateway"]
+        Policy["Policy Engine (Sentinel)"]
+        Namespace["Namespace Manager"]
+        Audit["Audit & Compliance Hub"]
     end
 
     subgraph CoreVault["Enterprise Vault Cluster"]
         direction TB
-        KV[KV Secrets Engine]
-        Transit[Transit Encryption]
-        PKI[Dynamic PKI Engine]
-        DBMethod[Dynamic Database Secrets]
+        KV["KV Secrets Engine"]
+        Transit["Transit Encryption"]
+        PKI["Dynamic PKI Engine"]
+        DBMethod["Dynamic Database Secrets"]
     end
 
     subgraph Connectivity["Secure Connectivity & Edge"]
         direction TB
-        LB[Load Balancer / Ingress]
-        PE[Private Endpoints]
-        Seal[Auto-Unseal (KMS/HSM)]
+        LB["Load Balancer / Ingress"]
+        PE["Private Endpoints"]
+        Seal["Auto-Unseal (KMS/HSM)"]
     end
 
     subgraph TargetApps["Consumer Workloads"]
         direction TB
-        Sidecar[Vault Sidecar Agent]
-        CSI[Secrets Store CSI]
-        CICD[CI/CD Runners]
+        Sidecar["Vault Sidecar Agent"]
+        CSI["Secrets Store CSI"]
+        CICD["CI/CD Runners"]
     end
 
     subgraph DevOps["DevOps & Governance"]
         direction TB
-        GH[GitHub Actions]
-        TF[Terraform Vault Provider]
-        Monitor[Prometheus / Grafana]
+        GH["GitHub Actions"]
+        TF["Terraform Vault Provider"]
+        Monitor["Prometheus / Grafana"]
     end
 
     %% Flow Arrows
@@ -94,6 +94,7 @@ graph LR
     Sidecar -->|10. Consume| TargetApps
     
     CoreVault -->|Telemetery| Monitor
+    Monitor -->|Visualize| Dash
     CoreVault -->|Audit Logs| Audit
     Seal -->|Unseal| CoreVault
 
@@ -117,25 +118,25 @@ graph LR
 The continuous path of a managed credential from initial generation and target system update to secure injection via sidecars and automated lease reconciliation. This ensures zero-interruption operations through dependency-aware secret lifecycles.
 
 ```mermaid
-graph TD
-    Trigger[Schedule / TTL] --> Check[Rotation Logic]
-    Check --> New[Generate New Secret]
-    New --> Target[Update Target System]
-    Target --> Store[Update Vault KV]
-    Store --> Notify[Webhook/App Reload]
-    Notify --> Audit[Log Rotation Success]
+flowchart TD
+    Trigger["Schedule / TTL"] --> Check["Rotation Logic"]
+    Check["Rotation Logic"] --> New["Generate New Secret"]
+    New["Generate New Secret"] --> Target["Update Target System"]
+    Target["Update Target System"] --> Store["Update Vault KV"]
+    Store["Update Vault KV"] --> Notify["Webhook/App Reload"]
+    Notify["Webhook/App Reload"] --> Audit["Log Rotation Success"]
 ```
 
 **Secret Injection Lifecycle:**
 ```mermaid
-graph LR
+flowchart LR
     subgraph Pod["Kubernetes Pod"]
-        App[Main Application]
-        Agent[Vault Agent Sidecar]
+        App["Main Application"]
+        Agent["Vault Agent Sidecar"]
     end
 
     subgraph Server["Vault Cluster"]
-        KV[KV Secrets]
+        KV["KV Secrets"]
     end
 
     Agent -->|1. Auth| Server
@@ -148,40 +149,40 @@ graph LR
 
 **Dynamic Secrets Flow:**
 ```mermaid
-graph LR
-    App[Application] -->|1. Request DB Creds| Vault[Vault]
-    Vault -->|2. Create User| DB[(PostgreSQL)]
-    DB -->|3. Confirm| Vault
-    Vault -->|4. Issue Leased Creds| App
-    App -->|5. Connect| DB
+flowchart LR
+    App["Application"] -->|1. Request DB Creds| Vault["Vault"]
+    Vault["Vault"] -->|2. Create User| DB[("PostgreSQL")]
+    DB[("PostgreSQL")] -->|3. Confirm| Vault
+    Vault["Vault"] -->|4. Issue Leased Creds| App
+    App["Application"] -->|5. Connect| DB
 ```
 
 **Dynamic PKI Certificate Flow:**
 ```mermaid
-graph TD
-    App[Microservice] -->|Request Cert| Vault[Vault PKI]
-    Vault -->|Generate Key Pair| Cert[X.509 Certificate]
-    Cert -->|Sign with CA| App
-    App -->|mTLS| Backend[Target Service]
+flowchart TD
+    App["Microservice"] -->|Request Cert| Vault["Vault PKI"]
+    Vault["Vault PKI"] -->|Generate Key Pair| Cert["X.509 Certificate"]
+    Cert["X.509 Certificate"] -->|Sign with CA| App
+    App["Microservice"] -->|mTLS| Backend["Target Service"]
 ```
 
 ### 3. Distributed Secrets Topology (Namespaces & Replication)
 Strategically orchestrating standardized secret namespaces across global regions and diverse resource architectures, providing a unified institutional view of secrets isolation.
 
 ```mermaid
-graph TD
+flowchart TD
     subgraph Root["Root Namespace (Governance)"]
-        GlobalPolicy[Global Audit Policies]
+        GlobalPolicy["Global Audit Policies"]
     end
 
     subgraph DeptA["Engineering Namespace"]
-        AppSrv[App Service Policies]
-        DBAdmin[DB Admin Policies]
+        AppSrv["App Service Policies"]
+        DBAdmin["DB Admin Policies"]
     end
 
     subgraph DeptB["Marketing Namespace"]
-        Web[Web Secrets]
-        Analytics[Analytics Keys]
+        Web["Web Secrets"]
+        Analytics["Analytics Keys"]
     end
 
     Root --> DeptA
@@ -190,13 +191,13 @@ graph TD
 
 **Cluster Replication Topology:**
 ```mermaid
-graph LR
+flowchart LR
     subgraph Region1["Primary Region"]
-        P1[Leader] --- P2[Follower]
+        P1["Leader"] --- P2["Follower"]
     end
 
     subgraph Region2["Secondary Region"]
-        S1[Performance Replica]
+        S1["Performance Replica"]
     end
 
     Region1 -->|Asynchronous Replication| Region2
@@ -206,116 +207,116 @@ graph LR
 Executing complex logic for securing the bridge between identities and secrets, ensuring every request is authorized via Sentinel, leases are tracked, and executive oversight is maintained.
 
 ```mermaid
-graph LR
-    Request[Read Secret] --> Sentinel{Sentinel Policy}
-    Sentinel -->|Pass| Success[Return Secret]
-    Sentinel -->|Fail| Deny[Log & Deny Access]
+flowchart LR
+    Request["Read Secret"] --> Sentinel{"Sentinel Policy"}
+    Sentinel{"Sentinel Policy"} -->|Pass| Success["Return Secret"]
+    Sentinel{"Sentinel Policy"} -->|Fail| Deny["Log & Deny Access"]
 ```
 
 **Lease Management Flow:**
 ```mermaid
-graph TD
-    L[Lease Issued] --> T[TTL Timer]
-    T --> Renew{Renewal Request?}
-    Renew -->|Yes| Update[Extend Lease]
-    Renew -->|No| Expire[Revoke Secret]
+flowchart TD
+    L["Lease Issued"] --> T["TTL Timer"]
+    T["TTL Timer"] --> Renew{"Renewal Request?"}
+    Renew{"Renewal Request?"} -->|Yes| Update["Extend Lease"]
+    Renew{"Renewal Request?"} -->|No| Expire["Revoke Secret"]
 ```
 
 ### 5. Multi-Cloud Secrets Federation (Performance Replication)
 Automatically managing unified secrets standards across global regions and diverse cloud tenants, ensuring institutional data residency and privacy boundaries by default.
 
 ```mermaid
-graph LR
-    VaultAWS[Vault AWS Node] <-->|Performance Sync| VaultAZ[Vault Azure Node]
-    VaultAWS <--> VaultGCP[Vault GCP Node]
+flowchart LR
+    VaultAWS["Vault AWS Node"] <-->|Performance Sync| VaultAZ["Vault Azure Node"]
+    VaultAWS["Vault AWS Node"] <--> VaultGCP["Vault GCP Node"]
 ```
 
 ### 6. Encryption & Perimeter Protection Flow (Seal/Unseal)
 Managing the lifecycle of a vault barrier, automatically enforcing institutional KMS auto-unseal and encryption standards as required by security policy, ensuring zero-latency security confidence.
 
 ```mermaid
-graph LR
-    Vault[Encrypted Vault] -->|Barrier| KMS[Azure Key Vault / AWS KMS]
-    KMS -->|Recovery Key| Vault
-    Vault -->|Master Key| Unsealed[Operational State]
+flowchart LR
+    Vault["Encrypted Vault"] -->|Barrier| KMS["Azure Key Vault / AWS KMS"]
+    KMS["Azure Key Vault / AWS KMS"] -->|Recovery Key| Vault
+    Vault["Encrypted Vault"] -->|Master Key| Unsealed["Operational State"]
 ```
 
 **Transit Encryption as a Service:**
 ```mermaid
-graph LR
-    App[Insecure Data] -->|Ciphertext Request| Vault[Transit Engine]
-    Vault -->|AES-256 GCM| App[Secure Data]
+flowchart LR
+    App["Insecure Data"] -->|Ciphertext Request| Vault["Transit Engine"]
+    Vault["Transit Engine"] -->|AES-256 GCM| App["Secure Data"]
 ```
 
 ### 7. Institutional Secrets Maturity Scorecard (Audit Reporting)
 Grading organizational performance based on key indicators: Rotation Success Index, Policy Compliance Index, and Zero-Trust Adoption Scores.
 
 ```mermaid
-graph TD
-    Compliance[Compliance Audit] --> Scan[Automated Policy Scan]
-    Scan --> Score[Posture Score]
+flowchart TD
+    Compliance["Compliance Audit"] --> Scan["Automated Policy Scan"]
+    Scan["Automated Policy Scan"] --> Score["Posture Score"]
 ```
 
 ### 8. Identity & RBAC for Secrets Governance
 Managing fine-grained access to secrets hubs, provisioning workers, and audit logs between Security Admins and Application Identites.
 
 ```mermaid
-graph LR
-    User((Human)) -->|SAML/OIDC| Vault{Vault}
-    Service[Microservice] -->|K8s JWT| Vault
-    Pipeline[CI/CD] -->|AppRole| Vault
-    Vault -->|Validate| Identity{Identity Provider}
-    Identity -->|Success| Token[Vault Token + Leases]
+flowchart LR
+    User((Human)) -->|SAML/OIDC| Vault{"Vault"}
+    Service["Microservice"] -->|K8s JWT| Vault{"Vault"}
+    Pipeline["CI/CD"] -->|AppRole| Vault{"Vault"}
+    Vault{"Vault"} -->|Validate| Identity{"Identity Provider"}
+    Identity{"Identity Provider"} -->|Success| Token["Vault Token + Leases"]
 ```
 
 **Policy-as-Code Mapping:**
 ```mermaid
-graph TD
-    User[Dev Group] --> Policy[HCL Policy: Read Only]
-    Policy --> KV[KV Path: /secret/dev/*]
+flowchart TD
+    User["Dev Group"] --> Policy["HCL Policy: Read Only"]
+    Policy["HCL Policy: Read Only"] --> KV["KV Path: /secret/dev/*"]
 ```
 
 ### 9. IaC Deployment: Vault-Central-Management-as-Code Framework
 Using modular Terraform pipelines to deploy and manage the versioned distribution of the vault clusters, seal mechanisms, and validation fleets.
 
 ```mermaid
-graph TD
-    TF[Terraform] --> Cluster[EKS Cluster]
-    TF --> Vault[Helm Release]
-    TF --> KMS[KMS Key]
+flowchart TD
+    TF["Terraform"] --> Cluster["EKS Cluster"]
+    TF["Terraform"] --> Vault["Helm Release"]
+    TF["Terraform"] --> KMS["KMS Key"]
 ```
 
 ### 10. AIOps Secrets Drift & Risk Validation Flow
 Using advanced analytics to identify sudden surges in access failures, unauthorized policy changes, or unusual delivery pattern changes that could result in institutional risk or audit failure.
 
 ```mermaid
-graph TD
-    Fail[Auth Failures Spike] --> AI[Anomaly Engine]
-    AI --> Alert[Security Pager]
+flowchart TD
+    Fail["Auth Failures Spike"] --> AI["Anomaly Engine"]
+    AI["Anomaly Engine"] --> Alert["Security Pager"]
 ```
 
 **Secret Usage Entropy:**
 ```mermaid
-graph LR
-    Log[Audit Log] -->|Analyze| Pattern[Access Pattern]
-    Pattern -->|Anomalous| Revoke[Auto-Revoke Token]
+flowchart LR
+    Log["Audit Log"] -->|Analyze| Pattern["Access Pattern"]
+    Pattern["Access Pattern"] -->|Anomalous| Revoke["Auto-Revoke Token"]
 ```
 
 ### 11. Metadata Lake for Forensic Secrets Audit
 Storing long-term records of every secret integration event (metadata), every credential rotation executed, and every audit stream for institutional record-keeping and forensic analysis.
 
 ```mermaid
-graph LR
-    Vault[Vault Events] -->|JSON Stream| Splunk[Splunk / ELK]
-    Vault -->|Metric Stream| Grafana[Grafana Dashboards]
-    Splunk -->|Alert| SOC[Security Ops Center]
+flowchart LR
+    Vault["Vault Events"] -->|JSON Stream| Splunk["Splunk / ELK"]
+    Vault["Vault Events"] -->|Metric Stream| Grafana["Grafana Dashboards"]
+    Splunk["Splunk / ELK"] -->|Alert| SOC["Security Ops Center"]
 ```
 
 **Immutable Audit Vaulting:**
 ```mermaid
-graph LR
-    Audit[Raw Logs] --> S3[Forensic S3 Bucket]
-    S3 --> Lock[Object Lock - 7 Years]
+flowchart LR
+    Audit["Raw Logs"] --> S3["Forensic S3 Bucket"]
+    S3["Forensic S3 Bucket"] --> Lock["Object Lock - 7 Years"]
 ```
 
 ---
